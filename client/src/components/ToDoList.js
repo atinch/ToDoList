@@ -4,13 +4,20 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { getItems, deleteItem } from '../actions/itemActions';
 import PropTypes from 'prop-types';
+import { RSA_PKCS1_OAEP_PADDING } from 'constants';
 
 class ToDoList extends Component {
   static propTypes = {
     getItems: PropTypes.func.isRequired,
-    item: PropTypes.object.isRequired,
-    isAuthenticated: PropTypes.bool
+    items: PropTypes.array.isRequired,
+    isAuthenticated: PropTypes.bool,
+    loadItems: PropTypes.bool
   };
+
+  static getDerivedStateFromProps(props, state) {
+    if(props.loadItems) props.getItems()
+    return state
+  }
 
   componentDidMount() {
     this.props.getItems();
@@ -21,7 +28,8 @@ class ToDoList extends Component {
   };
 
   render() {
-    const { items } = this.props.item;
+    const { items } = this.props;
+    if(!items) return null
     return (
       <Container>
         <ListGroup>
@@ -61,8 +69,9 @@ class ToDoList extends Component {
 }
 
 const mapStateToProps = state => ({
-  item: state.item,
-  isAuthenticated: state.auth.isAuthenticated
+  items: state.todoItems.items,
+  isAuthenticated: state.auth.isAuthenticated,
+  loadItems: state.todoItems.loadItems
 });
 
 export default connect(
