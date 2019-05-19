@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { login } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorActions';
+//import { getItems } from '../../actions/itemActions';
 
 class LoginModal extends Component {
   state = {
@@ -28,7 +29,8 @@ class LoginModal extends Component {
     isAuthenticated: PropTypes.bool,
     error: PropTypes.object.isRequired,
     login: PropTypes.func.isRequired,
-    clearErrors: PropTypes.func.isRequired
+    clearErrors: PropTypes.func.isRequired,
+    //getItems: PropTypes.func.isRequired
   };
 
   componentDidUpdate(prevProps) {
@@ -74,6 +76,7 @@ class LoginModal extends Component {
 
     // Attempt to login
     this.props.login(user);
+    //this.props.getItems();
   };
 
   render() {

@@ -10,11 +10,8 @@ const Item = require('../../models/Item');
 // @desc    Get All Items
 // @access  Public
 router.get('/', (req, res) => {
-  var decoded = jwt.decode(req.header('x-auth-token'));
-  var searchObj = { userId: decoded.id };
-  if (decoded.id=="5ce00ef5bc05b41f74685873") { //admin user
-    searchObj = {}
-  }
+  const decoded = jwt.decode(req.header('x-auth-token'));
+  const searchObj = (decoded.id === '5ce00ef5bc05b41f74685873') ? {} : { userId: decoded.id };
   Item.find(searchObj)
     .sort({ date: -1 })
     .then(items => res.json(items));
