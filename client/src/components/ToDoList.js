@@ -2,9 +2,19 @@ import React, { Component } from 'react';
 import { Container, ListGroup, ListGroupItem, Button } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { getItems, deleteItem } from '../actions/itemActions';
+import { getItems, deleteItem, updateItem } from '../actions/itemActions';
 import PropTypes from 'prop-types';
 import { RSA_PKCS1_OAEP_PADDING } from 'constants';
+
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Form,
+  FormGroup,
+  Label,
+  Input
+} from 'reactstrap';
 
 class ToDoList extends Component {
   static propTypes = {
@@ -14,6 +24,11 @@ class ToDoList extends Component {
     loadItems: PropTypes.bool
   };
 
+  state = {
+    modal: false,
+    updateName: '',
+    updateId: ''
+  }
   static getDerivedStateFromProps(props, state) {
     if(props.loadItems) props.getItems()
     return state
@@ -25,6 +40,39 @@ class ToDoList extends Component {
 
   onDeleteClick = id => {
     this.props.deleteItem(id);
+  };
+
+  onUpdateClick = (id, name) => {
+    this.setState({
+      updateName : name,
+      updateId : id,
+      modal: !this.state.modal
+    });
+    //this.props.deleteItem(id);
+  };
+
+  onChange = (e) => {
+    this.setState({updateName : e.target.value})
+  }
+  onSubmit = e => {
+    e.preventDefault();
+
+    const updateItem = {
+      id: this.state.updateId,
+      name: this.state.updateName
+    };
+
+    // Add item via addItem action
+    this.props.updateItem(updateItem);
+
+    // Close modal
+    this.toggle();
+  };
+
+  toggle = () => { 
+    this.setState({
+      modal: !this.state.modal
+    });
   };
 
   render() {
@@ -51,7 +99,7 @@ class ToDoList extends Component {
                      className='update-btn'
                      color='info'
                      size='sm'
-                     onClick={this.onDeleteClick.bind(this, _id)}
+                     onClick={this.onUpdateClick.bind(this, _id, name)}
                    >
                      Edit
                    </Button>
@@ -63,6 +111,27 @@ class ToDoList extends Component {
             ))}
           </TransitionGroup>
         </ListGroup>
+        <Modal isOpen={this.state.modal} toggle={this.toggle}>
+          <ModalHeader toggle={this.toggle}>Update ToDo Item</ModalHeader>
+          <ModalBody>
+            <Form onSubmit={this.onSubmit}>
+              <FormGroup>
+                <Label for='item'>Item</Label>
+                <Input
+                  type='text'
+                  name='name'
+                  id='item'
+                  placeholder='Update ToDo item'
+                  onChange={this.onChange.bind(this)}
+                  defaultValue={this.state.updateName}
+                />
+                <Button color='dark' style={{ marginTop: '2rem' }} block>
+                  Update Item
+                </Button>
+              </FormGroup>
+            </Form>
+          </ModalBody>
+        </Modal>
       </Container>
     );
   }
@@ -76,5 +145,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getItems, deleteItem }
+  { getItems, deleteItem, updateItem }
 )(ToDoList);

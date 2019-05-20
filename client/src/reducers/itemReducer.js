@@ -2,6 +2,7 @@ import {
   GET_ITEMS,
   ADD_ITEM,
   DELETE_ITEM,
+  UPDATE_ITEM,
   ITEMS_LOADING,
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS
@@ -32,6 +33,14 @@ export default function(state = initialState, action) {
         ...state,
         items: [action.payload, ...state.items]
       };
+      case UPDATE_ITEM:
+      console.log('action.payload.id', action.payload)
+      console.log('action', action)
+      console.log('items', state.items)
+      return {
+        ...state,
+        items: state.items.map(item => item._id === action.payload.id ? action.payload : item )
+      }
     case ITEMS_LOADING:
       return {
         ...state,

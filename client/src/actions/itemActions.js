@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_ITEMS, ADD_ITEM, DELETE_ITEM, ITEMS_LOADING } from './types';
+import { GET_ITEMS, ADD_ITEM, DELETE_ITEM, ITEMS_LOADING, UPDATE_ITEM } from './types';
 import { tokenConfig } from './authActions';
 import { returnErrors } from './errorActions';
 
@@ -33,6 +33,7 @@ export const addItem = item => (dispatch, getState) => {
 };
 
 export const deleteItem = id => (dispatch, getState) => {
+  console.log('tokenConfigdeleteItem....',tokenConfig(getState));
   axios
     .delete(`/api/items/${id}`, tokenConfig(getState))
     .then(res =>
@@ -42,6 +43,24 @@ export const deleteItem = id => (dispatch, getState) => {
       })
     )
     .catch(err =>
+      dispatch(returnErrors(err.response.data, err.response.status))
+    );
+};
+
+export const updateItem = item => (dispatch, getState) => {
+  console.log('updateItem Action', dispatch)
+  console.log('tokenConfigupdateItem....',tokenConfig(getState));
+  console.log('item', item, item.id)
+  const itemId = item.id
+  axios
+    .put(`/api/items/${itemId}`, item, tokenConfig(getState))
+    .then(res =>
+      dispatch({
+        type: UPDATE_ITEM,
+        payload: res.data
+      })
+    )
+    .catch(err => 
       dispatch(returnErrors(err.response.data, err.response.status))
     );
 };
