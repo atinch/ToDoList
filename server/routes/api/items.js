@@ -5,7 +5,6 @@ const auth = require('../../middleware/auth');
 // Item Model
 const Item = require('../../models/Item');
 
-console.log('server')
 router.get('/', auth, (req, res) => {
   const { role, id } = req.user;
   const searchObj = (role === 'super') ? {} : { userId: id };
@@ -25,14 +24,12 @@ router.post('/', auth, (req, res) => {
 });
 
 router.put('/:id', auth, (req, res) => {
-  console.log('put', req.body)
   Item.findByIdAndUpdate(req.params.id, req.body)
     .then(item => res.json(req.body))
     .catch(err => res.status(404).json({ success: false }));
 });
 
 router.delete('/:id', auth, (req, res) => {
-  console.log('delete', req.body)
   Item.findById(req.params.id)
     .then(item => item.remove().then(() => res.json({ success: true })))
     .catch(err => res.status(404).json({ success: false }));

@@ -34,9 +34,6 @@ export default function(state = initialState, action) {
         items: [action.payload, ...state.items]
       };
       case UPDATE_ITEM:
-      console.log('action.payload.id', action.payload)
-      console.log('action', action)
-      console.log('items', state.items)
       return {
         ...state,
         items: state.items.map(item => item._id === action.payload.id ? action.payload : item )
