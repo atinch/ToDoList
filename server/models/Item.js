@@ -5,13 +5,17 @@ const Schema = mongoose.Schema;
 const ItemSchema = new Schema({
   name: {
     type: String,
-    required: true
+    required: false
   },
   date: {
     type: Date,
     default: Date.now
   },
   userId : { 
+    type: String,
+    required: true
+  },
+  description : {
     type: String,
     required: true
   }

@@ -4,7 +4,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { getItems, deleteItem, updateItem } from '../actions/itemActions';
 import PropTypes from 'prop-types';
-import { RSA_PKCS1_OAEP_PADDING } from 'constants';
+//import { RSA_PKCS1_OAEP_PADDING } from 'constants';
 
 import {
   Modal,
@@ -27,7 +27,9 @@ class ToDoList extends Component {
   state = {
     modal: false,
     updateName: '',
-    updateId: ''
+    updateDescription: '',
+    updateId: '',
+    invalid: false
   }
   static getDerivedStateFromProps(props, state) {
     if(props.loadItems) props.getItems()
@@ -42,31 +44,31 @@ class ToDoList extends Component {
     this.props.deleteItem(id);
   };
 
-  onUpdateClick = (id, name) => {
+  onUpdateClick = (id, name, description) => {
     this.setState({
       updateName : name,
+      updateDescription : description,
       updateId : id,
       modal: !this.state.modal
     });
-    //this.props.deleteItem(id);
   };
 
   onChange = (e) => {
-    this.setState({updateName : e.target.value})
+    this.setState({[e.target.name] : e.target.value})
   }
   onSubmit = e => {
     e.preventDefault();
 
-    const updateItem = {
-      id: this.state.updateId,
-      name: this.state.updateName
-    };
+    if(this.state.updateDescription !== '') {
+      const updateItem = {
+        id: this.state.updateId,
+        name: this.state.updateName,
+        description: this.state.updateDescription
+      };
 
-    // Add item via addItem action
-    this.props.updateItem(updateItem);
-
-    // Close modal
-    this.toggle();
+      this.props.updateItem(updateItem);
+      this.toggle();
+    }else this.setState({invalid: true})
   };
 
   toggle = () => { 
@@ -82,7 +84,7 @@ class ToDoList extends Component {
       <Container>
         <ListGroup>
           <TransitionGroup className='ToDo-list'>
-            {items.map(({ _id, name }) => (
+            {items.map(({ _id, name, description }) => (
               <CSSTransition key={_id} timeout={500} classNames='fade'>
                 <ListGroupItem>
                   {this.props.isAuthenticated ? (
@@ -99,13 +101,15 @@ class ToDoList extends Component {
                      className='update-btn'
                      color='info'
                      size='sm'
-                     onClick={this.onUpdateClick.bind(this, _id, name)}
+                     onClick={this.onUpdateClick.bind(this, _id, name, description)}
                    >
                      Edit
                    </Button>
+                   <h5> {name} </h5>
                    </div>
                   ) : null}
-                  {name}
+                  {description}
+                  
                 </ListGroupItem>
               </CSSTransition>
             ))}
@@ -116,14 +120,24 @@ class ToDoList extends Component {
           <ModalBody>
             <Form onSubmit={this.onSubmit}>
               <FormGroup>
-                <Label for='item'>Item</Label>
+                <Label for='updateName'>Title</Label>
                 <Input
                   type='text'
-                  name='name'
-                  id='item'
-                  placeholder='Update ToDo item'
+                  name='updateName'
+                  id='updateName'
+                  placeholder=' Update Title'
                   onChange={this.onChange.bind(this)}
                   defaultValue={this.state.updateName}
+                />
+                <Label for='updateDescription'>Description</Label>
+                 <Input
+                  type='text'
+                  name='updateDescription'
+                  id='updateDescription'
+                  placeholder='Update Description'
+                  onChange={this.onChange.bind(this)}
+                  defaultValue={this.state.updateDescription}
+                  invalid = {this.state.invalid} 
                 />
                 <Button color='dark' style={{ marginTop: '2rem' }} block>
                   Update Item

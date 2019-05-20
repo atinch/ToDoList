@@ -22,6 +22,11 @@ npm run server
 npm run client
 
 # Server runs on http://localhost:5000 and client on http://localhost:3000
+
+# View the list of all TODOs
+Super user can see all TODOs.
+user : admin@gmail.com
+psw  : 1234
 ```
 
 

@@ -15,10 +15,13 @@ import { addItem } from '../actions/itemActions';
 import PropTypes from 'prop-types';
 
 class ItemModal extends Component {
-  state = {
+
+    state = {
     modal: false,
-    name: ''
-  };
+    name: '',
+    description: '',
+    invalid: false
+  }; 
 
   static propTypes = {
     isAuthenticated: PropTypes.bool
@@ -36,16 +39,22 @@ class ItemModal extends Component {
 
   onSubmit = e => {
     e.preventDefault();
+    if(this.state.description !== '') {
+      
+      const newItem = {
+        name: this.state.name,
+        description: this.state.description
+      };
 
-    const newItem = {
-      name: this.state.name
-    };
-
-    // Add item via addItem action
-    this.props.addItem(newItem);
-
-    // Close modal
-    this.toggle();
+      // Add item via addItem action
+      this.props.addItem(newItem);
+      this.setState({
+        name:'',
+        description:'',
+        invalid: false})
+      // Close modal
+      this.toggle();
+    } else this.setState({invalid: true})
   };
 
   render() {
@@ -68,13 +77,22 @@ class ItemModal extends Component {
           <ModalBody>
             <Form onSubmit={this.onSubmit}>
               <FormGroup>
-                <Label for='item'>Item</Label>
+                <Label for='name'>Title</Label>
                 <Input
                   type='text'
                   name='name'
-                  id='item'
-                  placeholder='Add ToDo item'
+                  id='name'
+                  placeholder='Title of the ToDo'
                   onChange={this.onChange}
+                />
+                <Label for='description'>Description</Label>
+                <Input
+                  type='text'
+                  name='description'
+                  id='description'
+                  placeholder='Description of the ToDo'
+                  onChange={this.onChange}
+                  invalid = {this.state.invalid} 
                 />
                 <Button color='dark' style={{ marginTop: '2rem' }} block>
                   Add Item
